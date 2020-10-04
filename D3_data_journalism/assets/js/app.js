@@ -84,6 +84,17 @@ function renderXCircles(circlesGroup, newXScale, chosenXAxis) {
   return circlesGroup;
 }
 
+// function used for updating ABBR group with a transition to
+// new circles on xAxis change
+function renderXAbbr(abbrGroup, newXScale, chosenXAxis) {
+  
+    abbrGroup.transition()
+      .duration(1000)
+      .attr("x", d => newXScale(d[chosenXAxis]));
+  
+    return abbrGroup;
+  }
+
 // function used for updating circles group with a transition to
 // new circles on yAxis change
 function renderYCircles(circlesGroup, newYScale, chosenYAxis) {
@@ -93,6 +104,17 @@ function renderYCircles(circlesGroup, newYScale, chosenYAxis) {
       .attr("cy", d => newYScale(d[chosenYAxis]));
   
     return circlesGroup;
+  }
+
+// function used for updating ABBR group with a transition to
+// new circles on yAxis change
+function renderYAbbr(abbrGroup, newYScale, chosenYAxis) {
+  
+    abbrGroup.transition()
+      .duration(1000)
+      .attr("y", d => newYScale(d[chosenYAxis]));
+  
+    return abbrGroup;
   }
 
 // function used for updating circles group with new tooltip for xAxis change
@@ -170,7 +192,8 @@ d3.csv("../assets/data/data.csv").then(function(healthData, err) {
     data.poverty = +data.poverty;
     data.healthcare = +data.healthcare;
     data.age = +data.age;
-    data.obesity = +data.obesity
+    data.obesity = +data.obesity;
+    //console.log(data.abbr)
   });
 
   // xLinearScale function above csv import
@@ -207,9 +230,25 @@ d3.csv("../assets/data/data.csv").then(function(healthData, err) {
     .append("circle")
     .attr("cx", d => xLinearScale(d[chosenXAxis]))
     .attr("cy", d => yLinearScale(d[chosenYAxis]))
-    .attr("r", 15)
+    .attr("r", 10)
     .attr("fill", "steelblue")
     .attr("opacity", ".5");
+    //console.log(circlesGroup);
+
+  // append initial state abbreviations at cicle centers
+  console.log(healthData);
+  var abbrGroup = chartGroup.selectAll("mytext")
+    .data(healthData)
+    .enter()
+    .append("text")
+    .attr("x", d => xLinearScale(d[chosenXAxis]))
+    .attr("y", d => yLinearScale(d[chosenYAxis] - 0.2))
+    .text(d => d.abbr)
+    .attr("font-family", "sans-serif")
+    .attr("font-size", "10px")
+    .attr("fill", "red")
+    .attr('text-anchor', 'middle');
+    console.log(abbrGroup);
 
   // Create group for two x-axis labels
   var labelsGroup = chartGroup.append("g")
@@ -266,8 +305,8 @@ d3.csv("../assets/data/data.csv").then(function(healthData, err) {
         // replaces chosenXAxis with value
         chosenXAxis = value;
 
-        console.log(chosenXAxis);
-        console.log(chosenYAxis);
+        //console.log(chosenXAxis);
+        //console.log(chosenYAxis);
 
         // functions here found above csv import
         // updates x scale for new data
@@ -278,6 +317,9 @@ d3.csv("../assets/data/data.csv").then(function(healthData, err) {
 
         // updates circles with new x values
         circlesGroup = renderXCircles(circlesGroup, xLinearScale, chosenXAxis);
+
+        // updates circle ABBR with new x values
+        abbrGroup = renderXAbbr(abbrGroup, xLinearScale, chosenXAxis);
 
         // updates tooltips with new info
         circlesGroup = updateXToolTip(chosenXAxis, circlesGroup);
@@ -312,8 +354,8 @@ d3.csv("../assets/data/data.csv").then(function(healthData, err) {
       // replaces chosenYAxis with value
       chosenYAxis = value;
 
-      console.log(chosenYAxis);
-      console.log(chosenXAxis);
+      //console.log(chosenYAxis);
+      //console.log(chosenXAxis);
 
       // functions here found above csv import
       // updates y scale for new data
@@ -324,6 +366,9 @@ d3.csv("../assets/data/data.csv").then(function(healthData, err) {
 
       // updates circles with new y values
       circlesGroup = renderYCircles(circlesGroup, yLinearScale, chosenYAxis);
+
+      // updates circle ABBR with new y values
+      abbrGroup = renderYAbbr(abbrGroup, yLinearScale, chosenYAxis);
 
       // updates tooltips with new info
       circlesGroup = updateYToolTip(chosenYAxis, circlesGroup);
