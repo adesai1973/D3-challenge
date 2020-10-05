@@ -208,7 +208,7 @@ function updateYToolTip(chosenYAxis, circlesGroup, abbrGroup) {
   }
 
 // Retrieve data from the CSV file and execute everything below
-d3.csv("./assets/data/data.csv").then(function(healthData, err) {
+d3.csv("assets/data/data.csv").then(function(healthData, err) {
   if (err) throw err;
 
   // parse data
